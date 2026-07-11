@@ -1,0 +1,27 @@
+# Keep the build context lean and reproducible: never ship host artifacts, so the
+# builder's clean `npm ci` result (and its rebuilt dist) is authoritative.
+node_modules
+**/node_modules
+dist
+**/dist
+coverage
+**/coverage
+
+# Local secrets / databases must never enter the image. Depth-agnostic globs so
+# stray SQLite files in nested dirs (e.g. server/prisma/prisma/) are excluded too.
+.env
+.env.*
+!.env.example
+**/*.db
+**/*.db-journal
+**/*.db-*
+
+# VCS, docs, CI and markdown are not needed at build time.
+.git
+.gitignore
+.github
+docs
+*.md
+**/*.md
+*.log
+.DS_Store

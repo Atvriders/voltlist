@@ -1,0 +1,13 @@
+# Build output
+dist/
+
+# Local & test SQLite databases (root .gitignore's prisma/*.db is anchored to the
+# repo root and does not cover this nested package). Migrations ARE tracked.
+prisma/*.db
+prisma/*.db-journal
+prisma/*.db-wal
+prisma/*.db-shm
+# Depth-agnostic globs so stray DBs in nested dirs (e.g. prisma/prisma/) are caught.
+**/*.db
+**/*.db-journal
+**/*.db-*

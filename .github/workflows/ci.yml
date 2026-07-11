@@ -1,0 +1,98 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+# Least-privilege default; the publish job elevates to packages: write.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ----------------------------------------------------------------------
+  # Verify: typecheck + data-integrity + tests + builds on every push/PR.
+  # ----------------------------------------------------------------------
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Prisma client is required for server typecheck, tests and build.
+      - name: Generate Prisma client
+        run: npx prisma generate --schema=server/prisma/schema.prisma
+
+      - name: Typecheck (all workspaces, strict)
+        run: npm run typecheck
+
+      # Data-integrity gate — fails the build on any schema / range / coverage
+      # violation in data/cars.json.
+      - name: Validate dataset
+        run: npm run validate-data
+
+      - name: Test (server + web)
+        run: npm test
+
+      - name: Build (server + web)
+        run: npm run build
+
+  # ----------------------------------------------------------------------
+  # Publish: build & push the multi-arch image to GHCR, master pushes only.
+  # ----------------------------------------------------------------------
+  publish:
+    needs: verify
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-qemu-action@v3
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push (linux/amd64 + linux/arm64)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/atvriders/voltlist:latest
+            ghcr.io/atvriders/voltlist:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Ensure the published package is public. The Atvriders org already
+      # defaults new packages to public, so this is a tolerant safeguard.
+      - name: Ensure package visibility is public
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api --method PATCH \
+            -H "Accept: application/vnd.github+json" \
+            "/orgs/atvriders/packages/container/voltlist/visibility" \
+            -f visibility=public \
+          || echo "Visibility API call did not apply; confirm 'public' in the package settings (org default is public)."

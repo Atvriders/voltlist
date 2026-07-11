@@ -1,0 +1,40 @@
+// VoltList — auth + user data only. Cars live in an in-memory store, not the DB.
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider      = "prisma-client-js"
+  // Engine targets that must be present in the container. The Docker image runs
+  // on Debian bookworm (glibc + OpenSSL 3.0); "native" covers local dev.
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  favorites Favorite[]
+  cart      CartItem[]
+}
+
+model Favorite {
+  id     String @id @default(cuid())
+  userId String
+  carId  String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, carId])
+}
+
+model CartItem {
+  id      String   @id @default(cuid())
+  userId  String
+  carId   String
+  addedAt DateTime @default(now())
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, carId])
+}

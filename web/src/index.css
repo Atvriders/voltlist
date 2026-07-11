@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background-color: var(--paper);
+    color: var(--ink);
+    line-height: 1.5;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    line-height: 1.05;
+  }
+
+  /* Visible keyboard focus everywhere (design quality floor). */
+  :focus-visible {
+    outline: 2px solid var(--voltage);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: var(--voltage);
+    color: #ffffff;
+  }
+}
+
+@layer utilities {
+  /* Spec values read like an instrument readout. */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 12px;
+  }
+}

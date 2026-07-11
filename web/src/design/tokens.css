@@ -1,0 +1,103 @@
+/*
+ * VoltList design tokens — "Instrument Cluster / Datasheet".
+ * Implements the frozen palette from docs/superpowers/design-direction.md.
+ * Light is the default (:root). Dark applies via BOTH prefers-color-scheme
+ * AND an explicit :root[data-theme="dark"] (the nav theme toggle stamps this).
+ * An explicit :root[data-theme="light"] forces light even on a dark system.
+ */
+
+:root {
+  /* Neutrals */
+  --ink: #14181b; /* graphite text */
+  --ink-soft: #566068; /* secondary text */
+  --paper: #f6f8f9; /* app background */
+  --surface: #ffffff; /* cards */
+  --surface-2: #eef2f3; /* insets, meter tracks */
+  --line: #e3e8ea; /* hairline dividers */
+
+  /* Accents */
+  --voltage: #2b34ff; /* PRIMARY — electric cobalt-indigo (CTAs, links, focus) */
+  --voltage-ink: #1b22c9; /* pressed */
+  --current: #ffb020; /* SECONDARY — amber "live current" (energy fills) */
+
+  /* Powertrain-semantic (encode real data everywhere) */
+  --pt-bev: #2b34ff; /* BEV = voltage cobalt */
+  --pt-phev: #7b3fe4; /* PHEV = violet */
+  --pt-hev: #0e9e8e; /* HEV = teal */
+
+  /* State */
+  --good: #0e9e8e; /* best-in-row / positive */
+  --warn: #c9451b;
+
+  /* Type families (self-hosted via @fontsource) */
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  /* Radius */
+  --radius-card: 10px;
+  --radius-control: 8px;
+
+  /* Elevation */
+  --shadow-card: 0 1px 2px rgba(20, 24, 27, 0.06), 0 1px 3px rgba(20, 24, 27, 0.04);
+  --shadow-lift: 0 6px 20px rgba(20, 24, 27, 0.12);
+}
+
+/* Dark values shared between the media query and the explicit attribute. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ink: #e9eef0;
+    --ink-soft: #9aa6ac;
+    --paper: #0c1013;
+    --surface: #131a1e;
+    --surface-2: #1b242a;
+    --line: #26313a;
+    --voltage: #5a63ff;
+    --voltage-ink: #4750f0;
+    --current: #ffc24b;
+    --pt-bev: #5a63ff;
+    --pt-phev: #9d6bff;
+    --pt-hev: #25c2af;
+    --good: #25c2af;
+    --warn: #e0653b;
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.4);
+    --shadow-lift: 0 6px 24px rgba(0, 0, 0, 0.55);
+  }
+}
+
+:root[data-theme="dark"] {
+  --ink: #e9eef0;
+  --ink-soft: #9aa6ac;
+  --paper: #0c1013;
+  --surface: #131a1e;
+  --surface-2: #1b242a;
+  --line: #26313a;
+  --voltage: #5a63ff;
+  --voltage-ink: #4750f0;
+  --current: #ffc24b;
+  --pt-bev: #5a63ff;
+  --pt-phev: #9d6bff;
+  --pt-hev: #25c2af;
+  --good: #25c2af;
+  --warn: #e0653b;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-lift: 0 6px 24px rgba(0, 0, 0, 0.55);
+}
+
+/* Explicit light restates the defaults so a light choice always wins. */
+:root[data-theme="light"] {
+  --ink: #14181b;
+  --ink-soft: #566068;
+  --paper: #f6f8f9;
+  --surface: #ffffff;
+  --surface-2: #eef2f3;
+  --line: #e3e8ea;
+  --voltage: #2b34ff;
+  --voltage-ink: #1b22c9;
+  --current: #ffb020;
+  --pt-bev: #2b34ff;
+  --pt-phev: #7b3fe4;
+  --pt-hev: #0e9e8e;
+  --good: #0e9e8e;
+  --warn: #c9451b;
+}

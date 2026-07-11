@@ -1,0 +1,22 @@
+node_modules/
+dist/
+*.log
+.env
+.env.*
+!.env.example
+data/*.db
+data/*.db-*
+prisma/*.db
+# Depth-agnostic SQLite artifact globs so stray DBs in nested dirs never commit.
+**/*.db
+**/*.db-journal
+**/*.db-*
+coverage/
+.DS_Store
+
+# Per-brand raw research dumps (pre-validation scratch). data/cars.json is the
+# validated source of truth; raw/ still contains phantom entries removed post-audit.
+data/raw/
+
+# Per-brand trim research scratch (pre-merge). data/cars.json is the source of truth.
+data/trims/

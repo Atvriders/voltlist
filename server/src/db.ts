@@ -1,0 +1,12 @@
+import { PrismaClient } from "@prisma/client";
+
+// Single PrismaClient across the process (and reused across hot reloads / test
+// files) to avoid exhausting SQLite connections.
+const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
+
+export const prisma: PrismaClient =
+  globalForPrisma.prisma ?? new PrismaClient();
+
+if (process.env.NODE_ENV !== "production") {
+  globalForPrisma.prisma = prisma;
+}
